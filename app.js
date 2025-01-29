@@ -2,7 +2,14 @@
 BASE_URL = "https://open.er-api.com/v6/latest/USD";
 
 const dropdowns = document.querySelectorAll('.dropdown select');
+const btn = document.querySelector('form button');
+const fromCurr = document.querySelector('.from select');
+const toCurr = document.querySelector('.to select');
+const msg = document.querySelector('.msg');
 
+window.addEventListener('load',()=>{
+    updateExchangeRate();
+})
 
 for(let select of dropdowns){
     for (let currCode in countryList) {
@@ -31,3 +38,26 @@ updateflag = (element) =>{
     img.src=newSrc;
 
 }
+
+const updateExchangeRate = async () => {
+    let amount = document.querySelector('.amount input');
+    let amountVal = amount.value;
+    if(amountVal<1){
+        amountVal=1;
+        amount.value = 1;
+    }
+    const URL = `https://open.er-api.com/v6/latest/${fromCurr.value}`;
+    let response = await fetch(URL);
+    let data = await response.json();
+    let convertingCurr = toCurr.value;
+    let rate = data.rates[convertingCurr];
+    let calculatedAmt = amountVal * rate;
+    let displayMsg = `${amountVal} ${fromCurr.value} = ${calculatedAmt} ${toCurr.value}`;
+    msg.innerText = displayMsg;
+
+}
+btn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    updateExchangeRate();
+});
+
